@@ -12,6 +12,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring.version>3.1.2.RELEASE</spring.version>
   </properties>
 
   <dependencies>
@@ -21,6 +22,80 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    <!-- struts2 -->
+	<dependency>
+		<groupId>org.apache.struts</groupId> 
+  		<artifactId>struts2-core</artifactId> 
+  		<version>2.2.3</version>
+  		<exclusions>
+  			<exclusion>
+  				<artifactId>tools</artifactId>
+  				<groupId>com.sun</groupId>
+  			</exclusion>
+  		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.struts.xwork</groupId>
+		<artifactId>xwork-core</artifactId>
+		<version>2.2.3</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.struts</groupId> 
+  		<artifactId>struts2-spring-plugin</artifactId> 
+  		<version>2.2.3</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.struts</groupId> 
+		<artifactId>struts2-json-plugin</artifactId>
+		<version>2.2.3</version> 
+	</dependency>
+    <dependency>
+	    <groupId>commons-lang</groupId>
+	    <artifactId>commons-lang</artifactId>
+	    <version>2.6</version>
+    </dependency>
+    
+    <dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-test</artifactId>
+		<version>${spring.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-beans</artifactId>
+		<version>${spring.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-core</artifactId>
+		<version>${spring.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-aop</artifactId>
+		<version>${spring.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-web</artifactId>
+		<version>${spring.version}</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-context</artifactId>
+		<version>${spring.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-orm</artifactId>
+		<version>${spring.version}</version>
+	</dependency>
   </dependencies>
   <modules>
     <module>tiaoin-crawl-core</module>

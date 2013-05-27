@@ -4,15 +4,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Service;
+
 import com.tiaoin.crawl.core.fetcher.FetchResult;
 import com.tiaoin.crawl.core.fetcher.Page;
 import com.tiaoin.crawl.core.task.Task;
 
 /**
  * 爬虫监听适配器
- * @author weiwei l.weiwei@163.com
- * @date 2013-1-7 上午11:39:57
+ * 
+ * @author sky.yang
+ * @version $Id: SpiderListenerAdaptor.java, v 1.0 2013-5-24 下午6:38:19 sky.yang Exp $
  */
+@Service
 public class SpiderListenerAdaptor implements SpiderListener {
     public void onFetch(Thread thread, Task task, FetchResult result) {
     }

@@ -15,10 +15,10 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-//import com.tiaoin.crawl.core.infra.SpiderIOC;
-//import com.tiaoin.crawl.core.infra.SpiderIOCs;
+import javax.annotation.Resource;
+
+import com.tiaoin.crawl.core.listener.DefaultSpiderListerner;
 import com.tiaoin.crawl.core.listener.SpiderListener;
-import com.tiaoin.crawl.core.listener.SpiderListenerAdaptor;
 import com.tiaoin.crawl.core.plugin.BeginPoint;
 import com.tiaoin.crawl.core.plugin.DigPoint;
 import com.tiaoin.crawl.core.plugin.DoneException;
@@ -35,6 +35,7 @@ import com.tiaoin.crawl.core.plugin.TargetPoint;
 import com.tiaoin.crawl.core.plugin.TaskPollPoint;
 import com.tiaoin.crawl.core.plugin.TaskPushPoint;
 import com.tiaoin.crawl.core.plugin.TaskSortPoint;
+import com.tiaoin.crawl.core.task.SpiderTimerTask;
 import com.tiaoin.crawl.core.task.Task;
 import com.tiaoin.crawl.core.task.TaskQueue;
 import com.tiaoin.crawl.core.utils.StringUtil;
@@ -44,15 +45,17 @@ import com.tiaoin.crawl.core.xml.Plugin;
 import com.tiaoin.crawl.core.xml.Plugins;
 import com.tiaoin.crawl.core.xml.Site;
 import com.tiaoin.crawl.core.xml.Target;
+//import com.tiaoin.crawl.core.infra.SpiderIOC;
+//import com.tiaoin.crawl.core.infra.SpiderIOCs;
 
 public class Spiderman {
 
-//    public final SpiderIOC   ioc              = SpiderIOCs.create();
+    //    public final SpiderIOC   ioc              = SpiderIOCs.create();
     public Boolean           isStop           = false;
     public Boolean           isShutdownNow    = false;
+    private Boolean          isInit           = false;
     private ExecutorService  pool             = null;
     private Collection<Site> sites            = null;
-    private SpiderListener   listener         = null;
 
     private boolean          isSchedule       = false;
     private Timer            timer            = new Timer();
@@ -61,22 +64,26 @@ public class Spiderman {
     private int              scheduleTimes    = 0;
     private int              maxScheduleTimes = 0;
 
-    public final static Spiderman me() {
-        return new Spiderman();
-    }
+    //切换到Spring模式
+    @Resource
+    private SpiderListener   listener;
 
     /**
      * @date 2013-1-17 下午01:43:52
      * @param listener
      * @return
      */
-    public Spiderman init(SpiderListener listener) {
-        return listen(listener).init();
+    public void init(SpiderListener listener) {
+        this.listener = listener;
+        init();
     }
 
-    public Spiderman init() {
+    /**
+     * 爬虫初始化,加载组件
+     */
+    public void init() {
         if (this.listener == null)
-            this.listener = new SpiderListenerAdaptor();
+            this.listener = new DefaultSpiderListerner();
         isStop = false;
         isShutdownNow = false;
         sites = null;
@@ -85,97 +92,39 @@ public class Spiderman {
             loadPlugins();
             initSites();
             initPool();
+            isInit = true;
         } catch (Exception e) {
             listener.onInfo(Thread.currentThread(), null, "Spiderman init error.");
             listener.onError(Thread.currentThread(), null, "Spiderman init error.", e);
         }
-        return this;
     }
 
-    public Spiderman listen(SpiderListener listener) {
-        this.listener = listener;
-        return this;
-    }
-
-    public Spiderman startup() {
+    public void startup() {
+        if (!isInit) {
+            init();
+        }
         if (isSchedule) {
             final Spiderman _this = this;
-            timer.schedule(
-                new TimerTask() {
-                    public void run() {
-                        // 限制schedule的次数
-                        if (_this.maxScheduleTimes > 0
-                            && _this.scheduleTimes >= _this.maxScheduleTimes) {
-                            _this.cancel();
-                            _this.listener.onInfo(Thread.currentThread(), null,
-                                "Spiderman has completed and cancel the schedule.");
-                            _this.isSchedule = false;
-                        } else {
-                            // 阻塞，判断之前所有的网站是否都已经停止完全
-                            // 加个超时
-                            long start = System.currentTimeMillis();
-                            long timeout = 10 * 60 * 1000;
-                            while (true) {
-                                if ((System.currentTimeMillis() - start) > timeout) {
-                                    _this.listener.onError(Thread.currentThread(), null,
-                                        "timeout of restart blocking check...", new Exception());
-                                    break;
-                                }
-                                if (_this.sites == null || _this.sites.isEmpty())
-                                    break;
-                                try {
-                                    Thread.sleep(1 * 1000);
-                                    boolean canBreak = true;
-                                    for (Site site : _this.sites) {
-                                        if (!site.isStop) {
-                                            canBreak = false;
-                                            _this.listener.onInfo(Thread.currentThread(), null,
-                                                "can not restart spiderman cause there has running-tasks of this site -> "
-                                                        + site.getName() + "...");
-                                        }
-                                    }
-
-                                    if (canBreak)
-                                        break;
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                    break;
-                                }
-                            }
-
-                            // 只有所有的网站资源都已被释放[特殊情况timeout]完全才重启Spiderman
-                            _this.scheduleTimes++;
-                            String strTimes = _this.scheduleTimes + "";
-                            if (_this.maxScheduleTimes > 0)
-                                strTimes += "/" + _this.maxScheduleTimes;
-
-                            _this.listener.onInfo(Thread.currentThread(), null,
-                                "Spiderman has scheduled " + strTimes + " times.");
-                            _this.init()._startup().keepStrict(scheduleTime);
-                        }
-                    }
-                }, new Date(),
+            timer.schedule(new SpiderTimerTask(_this), new Date(),
                 (StringUtil.toSeconds(scheduleTime).intValue() + StringUtil
                     .toSeconds(scheduleDelay).intValue()) * 1000);
-
-            return this;
+        } else {
+            _startup();
         }
 
-        return _startup();
     }
 
-    private Spiderman _startup() {
+    private void _startup() {
         for (Site site : sites) {
             pool.execute(new Spiderman._Executor(site));
             listener.onInfo(Thread.currentThread(), null, "spider tasks of site[" + site.getName()
                                                           + "] start... ");
         }
-        return this;
     }
 
     // -------- Schedule ------------
 
-    public Spiderman blocking() {
+    public void blocking() {
         while (isSchedule) {
             try {
                 Thread.sleep(1000);
@@ -183,65 +132,126 @@ public class Spiderman {
                 e.printStackTrace();
             }
         }
-
-        return this;
     }
 
-    public Spiderman schedule() {
-        return schedule(null);
+    /**
+     * 判断是否超过调度次数
+     * 
+     * @return
+     */
+    public boolean outOfSchedule() {
+        if (maxScheduleTimes > 0 && scheduleTimes >= maxScheduleTimes) {
+            return true;
+        }
+        return false;
     }
 
-    public Spiderman schedule(String time) {
-        if (time != null && time.trim().length() > 0)
-            this.scheduleTime = time;
-        this.isSchedule = true;
-        return this;
+    /**
+     * 调用后开始
+     */
+    public void startSchedule() {
+        // 阻塞，判断之前所有的网站是否都已经停止完全
+        // 加个超时
+        long start = System.currentTimeMillis();
+        long timeout = 10 * 60 * 1000;
+        while (true) {
+            if ((System.currentTimeMillis() - start) > timeout) {
+                listener.onError(Thread.currentThread(), null,
+                    "timeout of restart blocking check...", new Exception());
+                break;
+            }
+            if (sites == null || sites.isEmpty())
+                break;
+            try {
+                Thread.sleep(1 * 1000);
+                boolean canBreak = true;
+                for (Site site : sites) {
+                    if (!site.isStop) {
+                        canBreak = false;
+                        listener.onInfo(Thread.currentThread(), null,
+                            "can not restart spiderman cause there has running-tasks of this site -> "
+                                    + site.getName() + "...");
+                    }
+                }
+
+                if (canBreak)
+                    break;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                break;
+            }
+        }
+
+        // 只有所有的网站资源都已被释放[特殊情况timeout]完全才重启Spiderman
+        scheduleTimes++;
+        String strTimes = scheduleTimes + "";
+        if (maxScheduleTimes > 0)
+            strTimes += "/" + maxScheduleTimes;
+
+        listener.onInfo(Thread.currentThread(), null, "Spiderman has scheduled " + strTimes
+                                                      + " times.");
+        _startup();
+        keepStrict(scheduleTime);
     }
 
-    public Spiderman delay(String delay) {
+    //    public Spiderman schedule() {
+    //        return schedule(null);
+    //    }
+    //
+    //    public Spiderman schedule(String time) {
+    //        if (time != null && time.trim().length() > 0)
+    //            this.scheduleTime = time;
+    //        this.isSchedule = true;
+    //        return this;
+    //    }
+
+    public void delay(String delay) {
         if (delay != null && delay.trim().length() > 0)
             this.scheduleDelay = delay;
-        return this;
     }
 
-    public Spiderman times(int maxTimes) {
+    public void times(int maxTimes) {
         if (maxTimes > 0)
             this.maxScheduleTimes = maxTimes;
-        return this;
     }
 
-    public Spiderman cancel() {
-        this.timer.cancel();
+    /**
+     * 取消调度
+     * 
+     * @return
+     */
+    public void cancel() {
+        timer.cancel();
         timer = new Timer();
-        return this;
+        listener.onInfo(Thread.currentThread(), null,
+            "Spiderman has completed and cancel the schedule.");
+        isSchedule = false;
     }
 
     // ------------------------------
 
-    public Spiderman keepStrict(String time) {
-        return keepStrict(StringUtil.toSeconds(time).longValue() * 1000);
+    public void keepStrict(String time) {
+        keepStrict(StringUtil.toSeconds(time).longValue() * 1000);
     }
 
-    public Spiderman keepStrict(long time) {
+    public void keepStrict(long time) {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
         }
         shutdownNow();
-        return this;
     }
 
-    public Spiderman keep(String time) {
-        return keep(StringUtil.toSeconds(time).longValue() * 1000);
+    public void keep(String time) {
+        keep(StringUtil.toSeconds(time).longValue() * 1000);
     }
 
-    public Spiderman keep(long time) {
+    public void keep(long time) {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
         }
         shutdown();
-        return this;
     }
 
     public void shutdown() {

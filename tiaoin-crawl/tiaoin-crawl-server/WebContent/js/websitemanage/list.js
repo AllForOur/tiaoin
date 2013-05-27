@@ -2,7 +2,7 @@ var websiteManageList = function(){
 	var grid ;
 	var tree ;
 	var initTreeData = "<root><item rel='site'><content><name><![CDATA[site]]></name></content></item></root>";
-	
+	var str = "";
 	return {
 		init:function(){
 			this.tabInit();

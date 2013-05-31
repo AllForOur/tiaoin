@@ -180,7 +180,7 @@
 		<version>2.1.3.Final</version>
 	</dependency>
   </dependencies>
-  <modules>
+  <modules>    
     <module>tiaoin-crawl-core</module>
     <module>tiaoin-crawl-runtime</module>
     <module>tiaoin-crawl-common</module>

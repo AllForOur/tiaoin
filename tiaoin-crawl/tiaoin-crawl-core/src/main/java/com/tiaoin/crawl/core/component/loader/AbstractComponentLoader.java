@@ -8,7 +8,9 @@ import org.apache.log4j.Logger;
 
 import com.tiaoin.crawl.common.exception.ServiceException;
 import com.tiaoin.crawl.common.utils.XStreamUtil;
+import com.tiaoin.crawl.core.spider.Counter;
 import com.tiaoin.crawl.core.spider.Settings;
+import com.tiaoin.crawl.core.task.TaskQueue;
 import com.tiaoin.crawl.core.xml.Beans;
 import com.tiaoin.crawl.core.xml.Site;
 
@@ -43,8 +45,13 @@ public class AbstractComponentLoader implements ComponentLoader<List<Site>> {
             Beans beans = new Beans();
             XStreamUtil.transferXml2Bean(file.getAbsolutePath(), beans);
             Site site = beans.getSite();
-            if (site == null)
+            if (site == null) {
                 throw new ServiceException("site xml file error -> " + file.getAbsolutePath());
+            }
+            
+            site.queue = new TaskQueue();
+            site.counter = new Counter();
+            
             if ("1".equals(site.getEnable())) {
                 sites.add(site);
             }

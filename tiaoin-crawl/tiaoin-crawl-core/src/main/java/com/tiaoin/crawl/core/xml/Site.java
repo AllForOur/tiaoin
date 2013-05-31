@@ -2,6 +2,8 @@ package com.tiaoin.crawl.core.xml;
 
 import java.util.Collection;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.tiaoin.crawl.core.fetcher.PageFetcher;
@@ -194,4 +196,7 @@ public class Site {
         this.cookies = cookies;
     }
 
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this);
+    }
 }

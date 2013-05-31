@@ -17,7 +17,7 @@
 	  | thread:分配给本网站爬虫的线程数
 	  | waitQueue:当任务队列空的时候爬虫等待多长时间再索取任务
 	-->
-	<site name="oschina" url="http://www.oschina.net/question" reqDelay="1s" enable="0" charset="utf-8" schedule="1h" thread="2" waitQueue="10s">
+	<site name="oschina" url="http://www.oschina.net/question" reqDelay="1s" enable="1" charset="utf-8" schedule="1h" thread="2" waitQueue="10s">
 		<!--
 		  | HTTP Header
 		<headers>
@@ -55,7 +55,7 @@
 					<!--
 					  | 同前面的队列规则
 					-->
-					<rule type="regex" value="http://www\.oschina\.net/question/\d+_\d+" />
+					<rule type="regex" value="http://www\.oschina\.net/question"/>
 				</urls>
 				<!--
 				  | 目标网页的数据模型

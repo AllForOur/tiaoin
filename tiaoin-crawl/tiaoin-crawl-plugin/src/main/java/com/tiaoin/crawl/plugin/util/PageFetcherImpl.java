@@ -125,11 +125,16 @@ public class PageFetcherImpl implements PageFetcher {
      * @param cookies
      */
     public void init(Site site) {
-        for (com.tiaoin.crawl.core.xml.Header header : site.getHeaders().getHeader()) {
-            this.addHeader(header.getName(), header.getValue());
+        //System.out.println(site.toString());
+        if(null != site.getHeaders() && site.getHeaders().getHeader() != null) {
+            for (com.tiaoin.crawl.core.xml.Header header : site.getHeaders().getHeader()) {
+                this.addHeader(header.getName(), header.getValue());
+            }
         }
-        for (com.tiaoin.crawl.core.xml.Cookie cookie : site.getCookies().getCookie()) {
-            this.addCookie(cookie.getName(), cookie.getValue(), cookie.getHost(), cookie.getPath());
+        if(null != site.getCookies() && site.getCookies().getCookie() != null) {
+            for (com.tiaoin.crawl.core.xml.Cookie cookie : site.getCookies().getCookie()) {
+                this.addCookie(cookie.getName(), cookie.getValue(), cookie.getHost(), cookie.getPath());
+            }
         }
 
         //设置HTTP参数

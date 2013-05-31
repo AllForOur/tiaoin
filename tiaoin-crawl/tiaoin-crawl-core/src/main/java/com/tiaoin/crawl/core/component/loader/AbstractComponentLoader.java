@@ -50,6 +50,7 @@ public class AbstractComponentLoader implements ComponentLoader<List<Site>> {
             }
             
             site.queue = new TaskQueue();
+            site.queue.init();
             site.counter = new Counter();
             
             if ("1".equals(site.getEnable())) {

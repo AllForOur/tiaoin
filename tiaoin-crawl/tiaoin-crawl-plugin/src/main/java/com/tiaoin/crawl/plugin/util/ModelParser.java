@@ -18,6 +18,7 @@ import javax.xml.xpath.XPathFactory;
 
 import net.sf.saxon.xpath.XPathFactoryImpl;
 
+import org.apache.log4j.Logger;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.w3c.dom.Document;
@@ -41,6 +42,7 @@ import com.tiaoin.crawl.core.xml.Target;
 
 public class ModelParser extends DefaultHandler {
 
+    private Logger logger = Logger.getLogger(ModelParser.class);
     private Task                  task     = null;
     private Target                target   = null;
     private SpiderListener        listener = null;
@@ -178,10 +180,10 @@ public class ModelParser extends DefaultHandler {
     }
 
     public List<Map<String, Object>> parse(Page page) throws Exception {
-        listener.onInfo(Thread.currentThread(), task, "parse Page->[cType:" + page.getContentType()
-                                                      + ",charset:" + page.getCharset()
-                                                      + ",encoding:" + page.getEncoding()
-                                                      + ",url->" + page.getUrl());
+//        listener.onInfo(Thread.currentThread(), task, "parse Page->[cType:" + page.getContentType()
+//                                                      + ",charset:" + page.getCharset()
+//                                                      + ",encoding:" + page.getEncoding()
+//                                                      + ",url->" + page.getUrl());
         String contentType = page.getContentType();
         if (contentType == null)
             contentType = "text/html";
@@ -494,8 +496,9 @@ public class ModelParser extends DefaultHandler {
                     if ("1".equals(skipErr) || "true".equals(skipErr))
                         continue;
 
-                    listener.onError(Thread.currentThread(), task,
-                        "field->" + key + " parse failed cause->" + e.toString(), e);
+                    System.err.println("field->" + key + " parse failed cause->" + e.toString());
+//                    listener.onError(Thread.currentThread(), task,
+//                        "field->" + key + " parse failed cause->" + e.toString(), e);
                 }
             }
 

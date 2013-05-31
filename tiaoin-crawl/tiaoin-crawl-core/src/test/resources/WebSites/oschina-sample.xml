@@ -55,7 +55,7 @@
 					<!--
 					  | 同前面的队列规则
 					-->
-					<rule type="regex" value="http://www\.oschina\.net/question"/>
+					<rule type="regex" value="http://www\.oschina\.net/question/\d+_\d+"/>
 				</urls>
 				<!--
 				  | 目标网页的数据模型

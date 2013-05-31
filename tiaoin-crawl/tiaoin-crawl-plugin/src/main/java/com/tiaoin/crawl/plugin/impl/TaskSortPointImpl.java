@@ -11,7 +11,7 @@ import com.tiaoin.crawl.plugin.util.Util;
 
 public class TaskSortPointImpl implements TaskSortPoint {
 
-    public void init(Site site, SpiderListener listener) {
+    public void init(Site site) {
     }
 
     public void destroy() {

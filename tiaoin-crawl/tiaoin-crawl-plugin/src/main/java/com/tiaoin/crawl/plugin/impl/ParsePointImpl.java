@@ -18,8 +18,8 @@ public class ParsePointImpl implements ParsePoint {
     private Target         target;
     private Page           page;
 
-    public void init(Site site, SpiderListener listener) {
-        this.listener = listener;
+    public void init(Site site) {
+        //this.listener = listener;
     }
 
     public void destroy() {

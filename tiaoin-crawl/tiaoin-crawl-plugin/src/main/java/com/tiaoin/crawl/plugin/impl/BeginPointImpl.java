@@ -1,9 +1,8 @@
 package com.tiaoin.crawl.plugin.impl;
 
-import com.tiaoin.crawl.core.listener.SpiderListener;
+import com.tiaoin.crawl.common.utils.StringUtil;
 import com.tiaoin.crawl.core.plugin.BeginPoint;
 import com.tiaoin.crawl.core.task.Task;
-import com.tiaoin.crawl.core.utils.StringUtil;
 import com.tiaoin.crawl.core.xml.Site;
 
 public class BeginPointImpl implements BeginPoint {
@@ -15,7 +14,7 @@ public class BeginPointImpl implements BeginPoint {
         return task;
     }
 
-    public void init(Site site, SpiderListener listener) {
+    public void init(Site site) {
 
     }
 

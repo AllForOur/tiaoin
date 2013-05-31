@@ -9,10 +9,9 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.OperationStatus;
-import com.tiaoin.crawl.core.listener.SpiderListener;
+import com.tiaoin.crawl.common.utils.FileUtil;
+import com.tiaoin.crawl.common.utils.StringUtil;
 import com.tiaoin.crawl.core.spider.Settings;
-import com.tiaoin.crawl.core.utils.FileUtil;
-import com.tiaoin.crawl.core.utils.StringUtil;
 
 public class DocIDServer {
 
@@ -22,13 +21,13 @@ public class DocIDServer {
     private final Object mutex     = new Object();
     private int          lastDocID = 0;
 
-    public DocIDServer(String name, SpiderListener listener) {
+    public DocIDServer(String name) {
         this.name = name;
         File _dbEnv = new File(Settings.website_visited_folder());
         if (!_dbEnv.exists()) {
             String error = "dbEnv folder -> " + _dbEnv.getAbsolutePath() + " not found !";
             RuntimeException e = new RuntimeException(error);
-            listener.onError(Thread.currentThread(), null, error, e);
+            //listener.onError(Thread.currentThread(), null, error, e);
             throw e;
         }
         File dir = new File(_dbEnv.getAbsolutePath() + "/" + name);
@@ -40,11 +39,11 @@ public class DocIDServer {
             if (!flag) {
                 String error = "file -> " + f.getAbsolutePath() + " can not delete !";
                 RuntimeException e = new RuntimeException(error);
-                listener.onError(Thread.currentThread(), null, error, e);
+                //listener.onError(Thread.currentThread(), null, error, e);
                 throw e;
             }
-            listener.onInfo(Thread.currentThread(), null, "file -> " + f.getAbsolutePath()
-                                                          + " delete success !");
+//            listener.onInfo(Thread.currentThread(), null, "file -> " + f.getAbsolutePath()
+//                                                          + " delete success !");
         }
 
         DatabaseConfig dbConfig = new DatabaseConfig();

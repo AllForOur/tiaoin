@@ -3,15 +3,14 @@ package com.tiaoin.crawl.plugin.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.tiaoin.crawl.core.listener.SpiderListener;
+import com.tiaoin.crawl.common.utils.StringUtil;
 import com.tiaoin.crawl.core.plugin.TaskPushPoint;
 import com.tiaoin.crawl.core.task.Task;
-import com.tiaoin.crawl.core.utils.StringUtil;
 import com.tiaoin.crawl.core.xml.Site;
 
 public class TaskPushPointImpl implements TaskPushPoint {
 
-    public void init(Site site, SpiderListener listener) {
+    public void init(Site site) {
     }
 
     public void destroy() {

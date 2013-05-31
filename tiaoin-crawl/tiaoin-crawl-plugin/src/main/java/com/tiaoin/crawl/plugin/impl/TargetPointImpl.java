@@ -11,7 +11,7 @@ public class TargetPointImpl implements TargetPoint {
 
     private Task task = null;
 
-    public void init(Site site, SpiderListener listener) {
+    public void init(Site site) {
     }
 
     public void destroy() {

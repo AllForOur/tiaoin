@@ -9,6 +9,13 @@
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
 						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd"
 	default-autowire="byName">
+	
+    <context:component-scan base-package="com.tiaoin.crawl" />
+    
     <bean name="spiderman" class="com.tiaoin.crawl.core.spider.Spiderman"/>
+    <bean name="spiderComponentCollectionService" class="com.tiaoin.crawl.core.component.collection.SpiderComponentCollectionServiceImpl"/>
+    <bean name="pluginManager" class=" com.tiaoin.crawl.core.manager.PluginManager"/>
+    <bean name="siteManager" class="com.tiaoin.crawl.core.manager.SiteManager"/>
+    <bean name="extensionsPointsManager" class="com.tiaoin.crawl.core.manager.ExtentionsPointManager"/>
 </beans>
 

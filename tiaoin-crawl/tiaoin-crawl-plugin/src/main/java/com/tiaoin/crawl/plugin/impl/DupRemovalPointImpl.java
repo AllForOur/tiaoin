@@ -17,14 +17,14 @@ public class DupRemovalPointImpl implements DupRemovalPoint {
     private Collection<String> newUrls = null;
     private Site               site    = null;
 
-    public void init(Site site, SpiderListener listener) {
+    public void init(Site site) {
         this.site = site;
-        this.listener = listener;
+        //this.listener = listener;
         synchronized (mutex) {
             if (db == null) {
-                db = new DocIDServer(site.getName(), listener);
-                listener.onInfo(Thread.currentThread(), null, "DocIDServer -> " + site.getName()
-                                                              + " initial success...");
+                db = new DocIDServer(site.getName());
+//                listener.onInfo(Thread.currentThread(), null, "DocIDServer -> " + site.getName()
+//                                                              + " initial success...");
             }
         }
     }

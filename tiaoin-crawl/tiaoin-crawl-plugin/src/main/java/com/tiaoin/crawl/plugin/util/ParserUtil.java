@@ -8,7 +8,8 @@ import org.htmlcleaner.SimpleXmlSerializer;
 import org.htmlcleaner.TagNode;
 import org.w3c.dom.Node;
 
-import com.tiaoin.crawl.core.utils.StringUtil;
+import com.tiaoin.crawl.common.utils.StringUtil;
+
 
 /**
  * TODO

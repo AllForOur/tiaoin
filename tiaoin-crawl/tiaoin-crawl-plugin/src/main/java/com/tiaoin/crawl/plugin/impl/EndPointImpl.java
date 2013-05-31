@@ -10,7 +10,7 @@ import com.tiaoin.crawl.core.xml.Site;
 
 public class EndPointImpl implements EndPoint {
 
-    public void init(Site site, SpiderListener listener) {
+    public void init(Site site) {
 
     }
 

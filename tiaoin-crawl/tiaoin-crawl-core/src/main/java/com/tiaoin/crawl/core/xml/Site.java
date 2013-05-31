@@ -24,56 +24,56 @@ public class Site {
 
     @XStreamAsAttribute
     @XStreamAlias("name")
-    private String                     name;                      //网站名
+    private String                     name;                        //网站名
 
     @XStreamAsAttribute
     @XStreamAlias("url")
-    private String                     url;                       //网站url
+    private String                     url;                         //网站url
 
     @XStreamAsAttribute
     @XStreamAlias("reqDelay")
-    private String                     reqDelay  = "200";         //每个请求的延迟时间
+    private String                     reqDelay  = "200";           //每个请求的延迟时间
 
     @XStreamAsAttribute
     @XStreamAlias("charset")
-    private String                     charset;                   //网站内容字符集
+    private String                     charset;                     //网站内容字符集
 
     @XStreamAsAttribute
     @XStreamAlias("enable")
-    private String                     enable    = "1";           //是否开启本网站的抓取
+    private String                     enable    = "1";             //是否开启本网站的抓取
 
     @XStreamAsAttribute
     @XStreamAlias("schedule")
-    private String                     schedule  = "1h";          //每隔多长时间重头爬起
+    private String                     schedule  = "1h";            //每隔多长时间重头爬起
 
     @XStreamAsAttribute
     @XStreamAlias("thread")
-    private String                     thread    = "1";           //线程数
+    private String                     thread    = "1";             //线程数
 
     @XStreamAsAttribute
     @XStreamAlias("waitQueue")
-    private String                     waitQueue = "1s";          //当队列空的时候爬虫等待时间
+    private String                     waitQueue = "1s";            //当队列空的时候爬虫等待时间
 
     @XStreamAlias("headers")
-    private Headers                    headers   = new Headers(); //HTTP头
+    private Headers                    headers   = new Headers();   //HTTP头
 
     @XStreamAlias("cookies")
-    private Cookies                    cookies   = new Cookies(); //HTTP Cookie
+    private Cookies                    cookies   = new Cookies();   //HTTP Cookie
 
     @XStreamAlias("queueRules")
-    private Urls                       queueRules;                //允许进入抓取队列的url规则
+    private Urls                       queueRules;                  //允许进入抓取队列的url规则
 
     @XStreamAlias("targets")
-    private Targets                    targets;                   //抓取目标
+    private Targets                    targets;                     //抓取目标
 
     @XStreamAlias("plugins")
-    private Plugins                    plugins;                   //插件
+    private Plugins                    plugins;                     //插件
 
     //------------------------------------------
-    public Boolean                     isStop    = false;         //每个网站都有属于自己的一个停止信号，用来标识该网站的状态是否停止完全
-    public TaskQueue                   queue;                     //每个网站都有属于自己的一个任务队列容器
-    public PageFetcher                 fetcher;                   //每个网站都有属于自己的一个抓取器
-    public Counter                     counter;                   //针对本网站已完成的任务数量
+    public Boolean                     isStop    = false;           //每个网站都有属于自己的一个停止信号，用来标识该网站的状态是否停止完全
+    public TaskQueue                   queue     = new TaskQueue(); //每个网站都有属于自己的一个任务队列容器
+    public PageFetcher                 fetcher;                     //每个网站都有属于自己的一个抓取器
+    public Counter                     counter   = new Counter();   //针对本网站已完成的任务数量
     //------------------------------------------
     //--------------扩展点-----------------------
     public Collection<TaskPollPoint>   taskPollPointImpls;

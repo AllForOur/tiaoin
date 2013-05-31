@@ -24,7 +24,7 @@ public class DigPointImpl implements DigPoint {
     private FetchResult result = null;
     private Task        task   = null;
 
-    public void init(Site site, SpiderListener listener) {
+    public void init(Site site) {
 
     }
 

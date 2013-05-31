@@ -22,8 +22,9 @@ import com.tiaoin.crawl.core.xml.Plugin;
 
 /**
  * 插件管理
- * @author weiwei l.weiwei@163.com
- * @date 2013-1-15 下午03:00:57
+ * 
+ * @author sky.yang
+ * @version $Id: PluginManager.java, v 1.0 2013-5-28 下午4:24:00 sky.yang Exp $
  */
 public class PluginManager implements ApplicationContextAware {
     
@@ -37,7 +38,7 @@ public class PluginManager implements ApplicationContextAware {
      * @date 2013-1-2 下午07:13:11
      * @return
      */
-    public static Plugin createPlugin() {
+    public Plugin createPlugin() {
         Plugin plugin = new Plugin();
         Extensions extensions = new Extensions();
         for (String point : ExtensionPoints.toArray()) {

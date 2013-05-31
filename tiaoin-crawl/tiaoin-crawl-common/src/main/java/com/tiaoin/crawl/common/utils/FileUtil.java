@@ -1,4 +1,4 @@
-package com.tiaoin.crawl.core.utils;
+package com.tiaoin.crawl.common.utils;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;

@@ -5,7 +5,7 @@ import com.tiaoin.crawl.core.xml.Site;
 
 public interface Point {
 
-    public void init(Site site, SpiderListener listener);
+    public void init(Site site);
 
     public void destroy();
 

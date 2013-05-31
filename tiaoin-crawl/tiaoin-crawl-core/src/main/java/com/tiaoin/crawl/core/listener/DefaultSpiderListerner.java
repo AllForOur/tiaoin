@@ -5,12 +5,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.tiaoin.crawl.common.utils.DateUtil;
+import com.tiaoin.crawl.common.utils.FileUtil;
+import com.tiaoin.crawl.common.utils.StringUtil;
 import com.tiaoin.crawl.core.fetcher.FetchResult;
 import com.tiaoin.crawl.core.fetcher.Page;
 import com.tiaoin.crawl.core.task.Task;
-import com.tiaoin.crawl.core.utils.DateUtil;
-import com.tiaoin.crawl.core.utils.FileUtil;
-import com.tiaoin.crawl.core.utils.StringUtil;
 
 public class DefaultSpiderListerner implements SpiderListener {
 

@@ -1,13 +1,10 @@
 package com.tiaoin.crawl.core.spider;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -17,8 +14,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.tiaoin.crawl.common.exception.ServiceException;
+import com.tiaoin.crawl.common.utils.StringUtil;
+import com.tiaoin.crawl.core.component.collection.SpiderComponentCollectionServiceImpl;
 import com.tiaoin.crawl.core.listener.DefaultSpiderListerner;
 import com.tiaoin.crawl.core.listener.SpiderListener;
+import com.tiaoin.crawl.core.manager.PluginManager;
+import com.tiaoin.crawl.core.manager.SiteManager;
 import com.tiaoin.crawl.core.plugin.BeginPoint;
 import com.tiaoin.crawl.core.plugin.DigPoint;
 import com.tiaoin.crawl.core.plugin.DoneException;
@@ -28,7 +30,6 @@ import com.tiaoin.crawl.core.plugin.ExtensionPoint;
 import com.tiaoin.crawl.core.plugin.ExtensionPoints;
 import com.tiaoin.crawl.core.plugin.FetchPoint;
 import com.tiaoin.crawl.core.plugin.ParsePoint;
-import com.tiaoin.crawl.core.plugin.PluginManager;
 import com.tiaoin.crawl.core.plugin.Point;
 import com.tiaoin.crawl.core.plugin.PojoPoint;
 import com.tiaoin.crawl.core.plugin.TargetPoint;
@@ -38,11 +39,7 @@ import com.tiaoin.crawl.core.plugin.TaskSortPoint;
 import com.tiaoin.crawl.core.task.SpiderTimerTask;
 import com.tiaoin.crawl.core.task.Task;
 import com.tiaoin.crawl.core.task.TaskQueue;
-import com.tiaoin.crawl.core.utils.StringUtil;
-import com.tiaoin.crawl.core.utils.XStreamUtil;
-import com.tiaoin.crawl.core.xml.Beans;
 import com.tiaoin.crawl.core.xml.Plugin;
-import com.tiaoin.crawl.core.xml.Plugins;
 import com.tiaoin.crawl.core.xml.Site;
 import com.tiaoin.crawl.core.xml.Target;
 //import com.tiaoin.crawl.core.infra.SpiderIOC;
@@ -50,10 +47,10 @@ import com.tiaoin.crawl.core.xml.Target;
 
 public class Spiderman {
 
-    //    public final SpiderIOC   ioc              = SpiderIOCs.create();
     public Boolean           isStop           = false;
     public Boolean           isShutdownNow    = false;
     private Boolean          isInit           = false;
+    private Boolean          initSuccess      = false;
     private ExecutorService  pool             = null;
     private Collection<Site> sites            = null;
 
@@ -64,9 +61,17 @@ public class Spiderman {
     private int              scheduleTimes    = 0;
     private int              maxScheduleTimes = 0;
 
-    //切换到Spring模式
+    private SpiderListener   spiderListener;
     @Resource
-    private SpiderListener   listener;
+    private PluginManager pluginManager;
+    @Resource
+    private SiteManager siteManager;
+    @Resource
+    private SpiderComponentCollectionServiceImpl spiderComponentCollectionService;
+    
+    public SpiderListener getSpiderListener() {
+        return spiderListener;
+    }
 
     /**
      * @date 2013-1-17 下午01:43:52
@@ -74,7 +79,7 @@ public class Spiderman {
      * @return
      */
     public void init(SpiderListener listener) {
-        this.listener = listener;
+        this.spiderListener = listener;
         init();
     }
 
@@ -82,20 +87,24 @@ public class Spiderman {
      * 爬虫初始化,加载组件
      */
     public void init() {
-        if (this.listener == null)
-            this.listener = new DefaultSpiderListerner();
+        if (this.spiderListener == null)
+            this.spiderListener = new DefaultSpiderListerner();
         isStop = false;
         isShutdownNow = false;
         sites = null;
         pool = null;
         try {
-            loadPlugins();
-            initSites();
+            spiderComponentCollectionService.init();
+            siteManager.doInit(spiderComponentCollectionService);
+            pluginManager.doInit(spiderComponentCollectionService);
+            sites = spiderComponentCollectionService.getCompoentDescriptor();
+            //initSites();
             initPool();
             isInit = true;
-        } catch (Exception e) {
-            listener.onInfo(Thread.currentThread(), null, "Spiderman init error.");
-            listener.onError(Thread.currentThread(), null, "Spiderman init error.", e);
+            initSuccess = true;
+        } catch (ServiceException e) {
+            spiderListener.onInfo(Thread.currentThread(), null, "Spiderman init error.");
+            spiderListener.onError(Thread.currentThread(), null, "Spiderman init error.", e);
         }
     }
 
@@ -103,13 +112,17 @@ public class Spiderman {
         if (!isInit) {
             init();
         }
-        if (isSchedule) {
-            final Spiderman _this = this;
-            timer.schedule(new SpiderTimerTask(_this), new Date(),
-                (StringUtil.toSeconds(scheduleTime).intValue() + StringUtil
-                    .toSeconds(scheduleDelay).intValue()) * 1000);
+        if(initSuccess) {
+            if (isSchedule) {
+                final Spiderman _this = this;
+                timer.schedule(new SpiderTimerTask(this), new Date(),
+                    (StringUtil.toSeconds(scheduleTime).intValue() + StringUtil
+                        .toSeconds(scheduleDelay).intValue()) * 1000);
+            } else {
+                _startup();
+            }
         } else {
-            _startup();
+            spiderListener.onInfo(Thread.currentThread(), null, "Spiderman init failed,stop spider."); 
         }
 
     }
@@ -117,7 +130,7 @@ public class Spiderman {
     private void _startup() {
         for (Site site : sites) {
             pool.execute(new Spiderman._Executor(site));
-            listener.onInfo(Thread.currentThread(), null, "spider tasks of site[" + site.getName()
+            spiderListener.onInfo(Thread.currentThread(), null, "spider tasks of site[" + site.getName()
                                                           + "] start... ");
         }
     }
@@ -156,7 +169,7 @@ public class Spiderman {
         long timeout = 10 * 60 * 1000;
         while (true) {
             if ((System.currentTimeMillis() - start) > timeout) {
-                listener.onError(Thread.currentThread(), null,
+                spiderListener.onError(Thread.currentThread(), null,
                     "timeout of restart blocking check...", new Exception());
                 break;
             }
@@ -168,7 +181,7 @@ public class Spiderman {
                 for (Site site : sites) {
                     if (!site.isStop) {
                         canBreak = false;
-                        listener.onInfo(Thread.currentThread(), null,
+                        spiderListener.onInfo(Thread.currentThread(), null,
                             "can not restart spiderman cause there has running-tasks of this site -> "
                                     + site.getName() + "...");
                     }
@@ -188,7 +201,7 @@ public class Spiderman {
         if (maxScheduleTimes > 0)
             strTimes += "/" + maxScheduleTimes;
 
-        listener.onInfo(Thread.currentThread(), null, "Spiderman has scheduled " + strTimes
+        spiderListener.onInfo(Thread.currentThread(), null, "Spiderman has scheduled " + strTimes
                                                       + " times.");
         _startup();
         keepStrict(scheduleTime);
@@ -223,7 +236,7 @@ public class Spiderman {
     public void cancel() {
         timer.cancel();
         timer = new Timer();
-        listener.onInfo(Thread.currentThread(), null,
+        spiderListener.onInfo(Thread.currentThread(), null,
             "Spiderman has completed and cancel the schedule.");
         isSchedule = false;
     }
@@ -267,8 +280,8 @@ public class Spiderman {
         isShutdownNow = true;
     }
 
-    private void loadPlugins() throws Exception {
-        File siteFolder = new File(Settings.website_xml_folder());
+    /*private void loadPlugins() throws Exception {
+        File siteFolder = new File(Settings.getSiteXmlFolder());
         if (!siteFolder.exists())
             throw new Exception("can not found WebSites folder -> " + siteFolder.getAbsolutePath());
 
@@ -277,19 +290,14 @@ public class Spiderman {
 
         File[] files = siteFolder.listFiles();
         if (files == null || files.length == 0) {
-            // generate a site.xml file
             String sitePath = siteFolder.getAbsoluteFile() + File.separator + "_site_sample_.xml";
             File file = new File(sitePath);
             Site site = new Site();
 
             Plugins plugins = new Plugins();
-            plugins.getPlugin().add(PluginManager.createPlugin());
+            plugins.getPlugin().add(pluginManager.createPlugin());
             site.setPlugins(plugins);
 
-            // XMLWriter writer = BeanXMLUtil.getBeanXMLWriter(file, site);
-            // writer.setBeanName("site");
-            // writer.setClass("site", Site.class);
-            // writer.write();
             XStreamUtil.transferBean2Xml(sitePath, site);
         }
 
@@ -301,10 +309,6 @@ public class Spiderman {
                 continue;
             if (!file.getName().endsWith(".xml"))
                 continue;
-            // XMLReader reader = BeanXMLUtil.getBeanXMLReader(file);
-            // reader.setBeanName("site");
-            // reader.setClass("site", Site.class);
-            // Site site = reader.readOne();
             Beans beans = new Beans();
             XStreamUtil.transferXml2Bean(file.getAbsolutePath(), beans);
             Site site = beans.getSite();
@@ -314,9 +318,9 @@ public class Spiderman {
                 sites.add(site);
             }
         }
-    }
+    }*/
 
-    private void initSites() throws Exception {
+    /*private void initSites() throws Exception {
         for (Site site : sites) {
             if (site.getName() == null || site.getName().trim().length() == 0)
                 throw new Exception("site name required");
@@ -330,98 +334,97 @@ public class Spiderman {
                 throw new Exception("can not get any url target of site -> " + site.getName());
 
             // ---------------------插件初始化开始----------------------------
-            listener.onInfo(Thread.currentThread(), null, "plugins loading begin...");
-            Collection<Plugin> plugins = site.getPlugins().getPlugin();
+            spiderListener.onInfo(Thread.currentThread(), null, "plugins loading begin...");
+            //Collection<Plugin> plugins = site.getPlugins().getPlugin();
             // 加载网站插件配置
             try {
-                PluginManager pluginMgr = new PluginManager();
-                pluginMgr.loadPluginConf(plugins, listener);
+                //pluginManager.loadPluginConf(plugins, spiderListener);
 
                 // 加载TaskPoll扩展点实现类
-                ExtensionPoint<TaskPollPoint> taskPollPoint = pluginMgr
+                ExtensionPoint<TaskPollPoint> taskPollPoint = pluginManager
                     .getExtensionPoint(ExtensionPoints.task_poll);
                 if (taskPollPoint != null) {
                     site.taskPollPointImpls = taskPollPoint.getExtensions();
-                    firstInitPoint(site.taskPollPointImpls, site, listener);
+                    firstInitPoint(site.taskPollPointImpls, site, spiderListener);
                 }
 
                 // 加载Begin扩展点实现类
-                ExtensionPoint<BeginPoint> beginPoint = pluginMgr
+                ExtensionPoint<BeginPoint> beginPoint = pluginManager
                     .getExtensionPoint(ExtensionPoints.begin);
                 if (beginPoint != null) {
                     site.beginPointImpls = beginPoint.getExtensions();
-                    firstInitPoint(site.beginPointImpls, site, listener);
+                    firstInitPoint(site.beginPointImpls, site, spiderListener);
                 }
 
                 // 加载Fetch扩展点实现类
-                ExtensionPoint<FetchPoint> fetchPoint = pluginMgr
+                ExtensionPoint<FetchPoint> fetchPoint = pluginManager
                     .getExtensionPoint(ExtensionPoints.fetch);
                 if (fetchPoint != null) {
                     site.fetchPointImpls = fetchPoint.getExtensions();
-                    firstInitPoint(site.fetchPointImpls, site, listener);
+                    firstInitPoint(site.fetchPointImpls, site, spiderListener);
                 }
 
                 // 加载Dig扩展点实现类
-                ExtensionPoint<DigPoint> digPoint = pluginMgr
+                ExtensionPoint<DigPoint> digPoint = pluginManager
                     .getExtensionPoint(ExtensionPoints.dig);
                 if (digPoint != null) {
                     site.digPointImpls = digPoint.getExtensions();
-                    firstInitPoint(site.digPointImpls, site, listener);
+                    firstInitPoint(site.digPointImpls, site, spiderListener);
                 }
 
                 // 加载DupRemoval扩展点实现类
-                ExtensionPoint<DupRemovalPoint> dupRemovalPoint = pluginMgr
+                ExtensionPoint<DupRemovalPoint> dupRemovalPoint = pluginManager
                     .getExtensionPoint(ExtensionPoints.dup_removal);
                 if (dupRemovalPoint != null) {
                     site.dupRemovalPointImpls = dupRemovalPoint.getExtensions();
-                    firstInitPoint(site.dupRemovalPointImpls, site, listener);
+                    firstInitPoint(site.dupRemovalPointImpls, site, spiderListener);
                 }
                 // 加载TaskSort扩展点实现类
-                ExtensionPoint<TaskSortPoint> taskSortPoint = pluginMgr
+                ExtensionPoint<TaskSortPoint> taskSortPoint = pluginManager
                     .getExtensionPoint(ExtensionPoints.task_sort);
                 if (taskSortPoint != null) {
                     site.taskSortPointImpls = taskSortPoint.getExtensions();
-                    firstInitPoint(site.taskSortPointImpls, site, listener);
+                    firstInitPoint(site.taskSortPointImpls, site, spiderListener);
                 }
 
                 // 加载TaskPush扩展点实现类
-                ExtensionPoint<TaskPushPoint> taskPushPoint = pluginMgr
+                ExtensionPoint<TaskPushPoint> taskPushPoint = pluginManager
                     .getExtensionPoint(ExtensionPoints.task_push);
                 if (taskPushPoint != null) {
                     site.taskPushPointImpls = taskPushPoint.getExtensions();
-                    firstInitPoint(site.taskPushPointImpls, site, listener);
+                    firstInitPoint(site.taskPushPointImpls, site, spiderListener);
                 }
 
                 // 加载Target扩展点实现类
-                ExtensionPoint<TargetPoint> targetPoint = pluginMgr
+                ExtensionPoint<TargetPoint> targetPoint = pluginManager
                     .getExtensionPoint(ExtensionPoints.target);
                 if (targetPoint != null) {
                     site.targetPointImpls = targetPoint.getExtensions();
-                    firstInitPoint(site.targetPointImpls, site, listener);
+                    firstInitPoint(site.targetPointImpls, site, spiderListener);
                 }
 
                 // 加载Parse扩展点实现类
-                ExtensionPoint<ParsePoint> parsePoint = pluginMgr
+                ExtensionPoint<ParsePoint> parsePoint = pluginManager
                     .getExtensionPoint(ExtensionPoints.parse);
                 if (parsePoint != null) {
                     site.parsePointImpls = parsePoint.getExtensions();
-                    firstInitPoint(site.parsePointImpls, site, listener);
+                    firstInitPoint(site.parsePointImpls, site, spiderListener);
                 }
 
                 // 加载Pojo扩展点实现类
-                ExtensionPoint<PojoPoint> pojoPoint = pluginMgr
+                ExtensionPoint<PojoPoint> pojoPoint = pluginManager
                     .getExtensionPoint(ExtensionPoints.pojo);
                 if (pojoPoint != null) {
                     site.pojoPointImpls = pojoPoint.getExtensions();
-                    firstInitPoint(site.pojoPointImpls, site, listener);
+                    firstInitPoint(site.pojoPointImpls, site, spiderListener);
                 }
 
                 // 加载End扩展点实现类
-                ExtensionPoint<EndPoint> endPoint = pluginMgr
+                ExtensionPoint<EndPoint> endPoint = pluginManager
                     .getExtensionPoint(ExtensionPoints.end);
                 if (endPoint != null) {
                     site.endPointImpls = endPoint.getExtensions();
-                    firstInitPoint(site.endPointImpls, site, listener);
+                    firstInitPoint(site.endPointImpls, site, spiderListener);
                 }
                 // ---------------------------插件初始化完毕----------------------------------
             } catch (Exception e) {
@@ -435,13 +438,13 @@ public class Spiderman {
             site.counter = new Counter();
         }
     }
-
-    private void firstInitPoint(Collection<? extends Point> points, Site site,
+*/
+   /* private void firstInitPoint(Collection<? extends Point> points, Site site,
                                 SpiderListener listener) {
         for (Point point : points) {
             point.init(site, listener);
         }
-    }
+    }*/
 
     private void destroyPoint(Collection<? extends Point> points) {
         if (points == null)
@@ -485,7 +488,7 @@ public class Spiderman {
             pool = new ThreadPoolExecutor(size, size, 60L, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>());
 
-            listener.onInfo(Thread.currentThread(), null, "init thread pool size->" + size
+            spiderListener.onInfo(Thread.currentThread(), null, "init thread pool size->" + size
                                                           + " success ");
         }
     }
@@ -498,7 +501,7 @@ public class Spiderman {
             this.site = site;
             String strSize = site.getThread();
             int size = Integer.parseInt(strSize);
-            listener.onInfo(Thread.currentThread(), null, "site thread size -> " + size);
+            spiderListener.onInfo(Thread.currentThread(), null, "site thread size -> " + size);
             RejectedExecutionHandler rejectedHandler = new RejectedExecutionHandler() {
                 public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
                     // 拿到被弹出来的爬虫引用
@@ -529,7 +532,7 @@ public class Spiderman {
             // 运行种子任务
             Task feedTask = new Task(new String(this.site.getUrl()), this.site, 10);
             Spider feedSpider = new Spider();
-            feedSpider.init(feedTask, listener);
+            feedSpider.init(feedTask, spiderListener);
             feedSpider.run();
 
             final float times = StringUtil.toSeconds(this.site.getSchedule()) * 1000;
@@ -543,7 +546,7 @@ public class Spiderman {
                             _pool.shutdown();
 
                         _pool = null;
-                        listener.onInfo(Thread.currentThread(), null, site.getName()
+                        spiderListener.onInfo(Thread.currentThread(), null, site.getName()
                                                                       + ".Spider shutdown...");
                         destroySite(this.site);
                         return;
@@ -573,20 +576,20 @@ public class Spiderman {
                     }
 
                     Spider spider = new Spider();
-                    spider.init(task, listener);
+                    spider.init(task, spiderListener);
                     _pool.execute(spider);
 
                 } catch (DoneException e) {
-                    listener.onInfo(Thread.currentThread(), null, e.toString());
+                    spiderListener.onInfo(Thread.currentThread(), null, e.toString());
                     return;
                 } catch (Exception e) {
-                    listener.onError(Thread.currentThread(), null, e.toString(), e);
+                    spiderListener.onError(Thread.currentThread(), null, e.toString(), e);
                 } finally {
                     long cost = System.currentTimeMillis() - start;
                     if (cost >= times) {
                         // 运行种子任务
                         feedSpider.run();
-                        listener
+                        spiderListener
                             .onInfo(Thread.currentThread(), null, " shcedule FeedSpider per "
                                                                   + times + ", now cost time ->"
                                                                   + cost);

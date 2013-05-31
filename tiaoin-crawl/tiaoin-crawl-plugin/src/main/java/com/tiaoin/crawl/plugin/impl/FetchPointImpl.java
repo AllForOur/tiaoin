@@ -1,10 +1,10 @@
 package com.tiaoin.crawl.plugin.impl;
 
+import com.tiaoin.crawl.common.utils.StringUtil;
 import com.tiaoin.crawl.core.fetcher.FetchResult;
 import com.tiaoin.crawl.core.listener.SpiderListener;
 import com.tiaoin.crawl.core.plugin.FetchPoint;
 import com.tiaoin.crawl.core.task.Task;
-import com.tiaoin.crawl.core.utils.StringUtil;
 import com.tiaoin.crawl.core.xml.Site;
 import com.tiaoin.crawl.plugin.util.PageFetcherImpl;
 import com.tiaoin.crawl.plugin.util.SpiderConfig;
@@ -19,8 +19,8 @@ public class FetchPointImpl implements FetchPoint {
     private SpiderListener listener = null;
     private Task           task     = null;
 
-    public void init(Site site, SpiderListener listener) {
-        this.listener = listener;
+    public void init(Site site) {
+        //this.listener = listener;
     }
 
     public void destroy() {

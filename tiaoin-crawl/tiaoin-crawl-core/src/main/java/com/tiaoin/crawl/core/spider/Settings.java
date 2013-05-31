@@ -1,12 +1,12 @@
 package com.tiaoin.crawl.core.spider;
 
+import com.tiaoin.crawl.common.utils.StringUtil;
+import com.tiaoin.crawl.common.utils.UrlUtil;
 import com.tiaoin.crawl.core.conf.ConfigrationFactory;
-import com.tiaoin.crawl.core.utils.StringUtil;
-import com.tiaoin.crawl.core.utils.UrlUtil;
 
 public class Settings {
 
-    public static String website_xml_folder() {
+    public static String getSiteXmlFolder() {
         return ConfigrationFactory.getConfigration().getPropertyValue("website.xml.folder")
             .replace("#{ClassPath}", UrlUtil.getClassesPath());
     }

@@ -35,9 +35,14 @@
 	</dependency>
     
     <dependency>
+      <groupId>com.tiaoin.crawl.common</groupId>
+      <artifactId>tiaoin-crawl-common</artifactId>
+      <version>1.0.0</version>
+    </dependency> 
+    <dependency>
       <groupId>com.tiaoin.crawl.core</groupId>
       <artifactId>tiaoin-crawl-core</artifactId>
       <version>1.0.0</version>
-    </dependency>
+    </dependency> 
   </dependencies>
 </project>

@@ -4,23 +4,24 @@ import java.util.TimerTask;
 
 import javax.annotation.Resource;
 
+import com.tiaoin.crawl.core.schedule.Scheduler;
 import com.tiaoin.crawl.core.spider.Spiderman;
 import com.tiaoin.crawl.core.xml.Site;
 
 public class SpiderTimerTask extends TimerTask {
-    private Spiderman spiderman;
+    private Scheduler scheduler;
     
-    public SpiderTimerTask(Spiderman spiderman) {
-        this.spiderman = spiderman;
+    public SpiderTimerTask(Scheduler scheduler) {
+        this.scheduler = scheduler;
     }
 
     @Override
     public void run() {
         // 限制schedule的次数
-        if(spiderman.outOfSchedule()) {
-            cancel();
+        if(scheduler.outOfSchedule()) {
+            scheduler.cancelSchedule();
         } else {
-            spiderman.startSchedule();
+            scheduler.startSchedule();
         }
     }
 

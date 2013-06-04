@@ -32,9 +32,9 @@ public class Spider implements Runnable {
     public Task           task;
     public SpiderListener listener;
 
-    public void init(Task task, SpiderListener listener) {
+    public void init(Task task) {
         this.task = task;
-        this.listener = listener;
+        //this.listener = listener;
     }
 
     public void run() {
@@ -80,8 +80,9 @@ public class Spider implements Runnable {
                 }
             }
 
-            if (newUrls != null && !newUrls.isEmpty()){}
-//                this.listener.onNewUrls(Thread.currentThread(), task, newUrls);
+            if (newUrls != null && !newUrls.isEmpty()) {
+            }
+            //                this.listener.onNewUrls(Thread.currentThread(), task, newUrls);
             else
                 newUrls = new ArrayList<String>();
 
@@ -95,8 +96,9 @@ public class Spider implements Runnable {
                 }
             }
 
-            if (newUrls != null && !newUrls.isEmpty()){}
-//                this.listener.onDupRemoval(Thread.currentThread(), task, validTasks);
+            if (newUrls != null && !newUrls.isEmpty()) {
+            }
+            //                this.listener.onDupRemoval(Thread.currentThread(), task, validTasks);
 
             if (validTasks == null)
                 validTasks = new ArrayList<Task>();
@@ -115,8 +117,9 @@ public class Spider implements Runnable {
             //扩展点：task_push 将任务放入队列
             validTasks = pushTask(validTasks);
 
-            if (validTasks != null && !validTasks.isEmpty()){}
-//                this.listener.onNewTasks(Thread.currentThread(), task, validTasks);
+            if (validTasks != null && !validTasks.isEmpty()) {
+            }
+            //                this.listener.onNewTasks(Thread.currentThread(), task, validTasks);
 
             Page page = result.getPage();
             if (page == null) {
@@ -139,7 +142,7 @@ public class Spider implements Runnable {
                 return;
             }
 
-//            this.listener.onTargetPage(Thread.currentThread(), task, page);
+            //            this.listener.onTargetPage(Thread.currentThread(), task, page);
 
             //扩展点：parse 把已确认好的目标页面解析成为Map对象
             List<Map<String, Object>> models = null;

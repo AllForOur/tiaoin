@@ -8,6 +8,6 @@ import java.io.Serializable;
  * @author sky.yang
  * @version $Id: BasicBean.java, v 1.0 2013-1-21 下午6:03:38 sky.yang Exp $
  */
-public class BasicBean implements Serializable {
+public class BaseBean implements Serializable {
 
 }

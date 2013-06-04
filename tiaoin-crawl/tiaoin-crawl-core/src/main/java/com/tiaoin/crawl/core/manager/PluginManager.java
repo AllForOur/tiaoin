@@ -29,14 +29,15 @@ public class PluginManager extends AbstractManager implements ApplicationContext
     @Resource
     private ExtentionsPointManager        extensionsPointsManager;
 
-    private Map<String, Collection<Impl>> impls  = new HashMap<String, Collection<Impl>>();
+    //private Map<String, Collection<Impl>> impls  = new HashMap<String, Collection<Impl>>();
+    private Map<String, Map<String, Collection<Impl>>> implCollections = new HashMap<String, Map<String, Collection<Impl>>>();
 
     @Override
     public void init() {
         List<Site> sites = spiderComponentLoader.getCompoentDescriptor();
         for (Site site : sites) {
             Collection<Plugin> plugins = site.getPlugins().getPlugin();
-            loadPluginConf(plugins);
+            loadPluginConf(plugins, site.getName());
             extensionsPointsManager.loadExtendsPoint(site, this);
         }
         
@@ -59,11 +60,12 @@ public class PluginManager extends AbstractManager implements ApplicationContext
      * @param listener
      * @throws Exception
      */
-    public void loadPluginConf(Collection<Plugin> plugins) {
+    public void loadPluginConf(Collection<Plugin> plugins, String siteName) {
         if (plugins == null || plugins.isEmpty()) {
             logger.info("[SYSTEM INFO][There is no plugin to load!]");
         }
 
+        Map<String, Collection<Impl>> implMaps  = new HashMap<String, Collection<Impl>>();
         for (Plugin plugin : plugins) {
             if (!"1".equals(plugin.getEnable())) {
                 logger.info("[SPIDER][Thread ID=" + Thread.currentThread().getId()
@@ -104,17 +106,19 @@ public class PluginManager extends AbstractManager implements ApplicationContext
                 Collections.sort(impls, new ImplComparator());
 
                 //一个扩展点有多个实现类
-                Collection<Impl> _impls = this.impls.get(point);
+                Collection<Impl> _impls = implMaps.get(point);
                 if (_impls != null)
                     _impls.addAll(impls);
                 else
-                    this.impls.put(point, impls);
+                    implMaps.put(point, impls);
 
                 logger.info("[SPIDER][Thread ID=" + Thread.currentThread().getId()
                             + "][skip plugin[" + plugin.getName() + "]  extension-point[" + point
                             + "] loading ok]");
             }
         }
+        
+        implCollections.put(siteName, implMaps);
     }
 
     /**
@@ -124,11 +128,15 @@ public class PluginManager extends AbstractManager implements ApplicationContext
      * @param name
      * @return
      */
-    public <T> ExtensionPoint<T> getExtensionPoint(final String pointName) {
-        if (!this.impls.containsKey(pointName))
+    public <T> ExtensionPoint<T> getExtensionPoint(String siteName, final String pointName) {
+        if(!implCollections.containsKey(siteName)) {
+            return null;
+        }
+        Map<String, Collection<Impl>> impls = implCollections.get(siteName);
+        if (!impls.containsKey(pointName))
             return null;
 
-        final Collection<Impl> _impls = this.impls.get(pointName);
+        final Collection<Impl> _impls = impls.get(pointName);
         return new ExtensionPoint<T>() {
             public Collection<T> getExtensions() {
                 Collection<T> result = new ArrayList<T>();

@@ -115,7 +115,7 @@ public class Spiderman {
         if(initSuccess) {
             if (isSchedule) {
                 final Spiderman _this = this;
-                timer.schedule(new SpiderTimerTask(this), new Date(),
+                timer.schedule(new SpiderTimerTask(null), new Date(),
                     (StringUtil.toSeconds(scheduleTime).intValue() + StringUtil
                         .toSeconds(scheduleDelay).intValue()) * 1000);
             } else {
@@ -532,7 +532,7 @@ public class Spiderman {
             // 运行种子任务
             Task feedTask = new Task(new String(this.site.getUrl()), this.site, 10);
             Spider feedSpider = new Spider();
-            feedSpider.init(feedTask, spiderListener);
+            feedSpider.init(feedTask);
             feedSpider.run();
 
             final float times = StringUtil.toSeconds(this.site.getSchedule()) * 1000;
@@ -576,7 +576,7 @@ public class Spiderman {
                     }
 
                     Spider spider = new Spider();
-                    spider.init(task, spiderListener);
+                    spider.init(task);
                     _pool.execute(spider);
 
                 } catch (DoneException e) {

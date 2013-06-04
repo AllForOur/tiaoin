@@ -1,10 +1,10 @@
 package com.tiaoin.crawl.core.xml;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.tiaoin.crawl.core.model.BasicBean;
+import com.tiaoin.crawl.core.model.BaseBean;
 
 @XStreamAlias("beans")
-public class Beans extends BasicBean {
+public class Beans extends BaseBean {
 
     @XStreamAlias("site")
     private Site site;

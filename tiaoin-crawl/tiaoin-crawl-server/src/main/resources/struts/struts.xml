@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+        "http://struts.apache.org/dtds/struts-2.1.7.dtd">
+
+<struts>
+	<!-- 配置使用Spring管理Action -->
+	<constant name="struts.action.extension" value="action,do,*"/>
+	<!-- 不让struts2给我们生成代码 -->
+	<constant name="struts.ui.theme" value="simple"/>
+	<!-- 开发模式下使用,这样可以打印出更详细的错误信息 -->
+	<constant name="struts.devMode" value="true" />
+	<constant name="struts.objectFactory" value="spring" />
+	<constant name="struts.multipart.saveDir" value="/tmp" />
+	<constant name="struts.i18n.encoding" value="UTF-8"></constant>
+	<constant name="struts.url.includeParams" value="none" />
+	
+	<!-- 首页 -->
+	<package name="" extends="struts-default">
+	
+		<!-- 登录拦截器 
+	   	<interceptors>
+      		<interceptor name="loginInterceptor" class="loginInterceptor"/>
+        	<interceptor-stack name="myStack">
+        		<interceptor-ref name="defaultStack"/>
+            	<interceptor-ref name="loginInterceptor"/>
+        	</interceptor-stack>
+        </interceptors>
+    	<default-interceptor-ref name="myStack"/>
+   		<global-results>
+			<result name="relogin">/views/index.jsp</result>
+ 		</global-results>
+	
+-->
+		
+	</package>
+    
+</struts>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="STDOUT"
+		class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-5p - %m%n"/>
+		</layout>
+	</appender>
+	<appender name="debug" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="./logs/tiaoin-crawl-server-debug.log"/>
+		<param name="MaxBackupIndex" value="300"/>
+		<param name="Encoding" value="GB2312"/>
+		<param name="MaxFileSize" value="20MB"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ISO8601} %p [%c] - [%m]%n"/>
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="debug"/>
+			<param name="LevelMax" value="debug"/>
+			<param name="acceptOnMatch" value="true"/>
+		</filter>
+	</appender>		
+	<appender name="ibatis" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="./logs/tiaoin-crawl-server-ibatis.log"/>
+		<param name="MaxBackupIndex" value="300"/>
+		<param name="Encoding" value="GB2312"/>
+		<param name="MaxFileSize" value="20MB"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ISO8601} %p [%c] - [%m]%n"/>
+		</layout>
+	</appender>
+	<appender name="info" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="./logs/tiaoin-crawl-server-info.log"/>
+		<param name="Encoding" value="GB2312"/>
+		<param name="MaxBackupIndex" value="300"/>
+		<param name="MaxFileSize" value="20MB"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ISO8601} %p [%c] - [%m]%n"/>
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="info"/>
+			<param name="LevelMax" value="info"/>
+			<param name="acceptOnMatch" value="true"/>
+		</filter>
+	</appender>
+	<appender name="warn" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="./logs/tiaoin-crawl-server-warn.log"/>
+		<param name="MaxBackupIndex" value="3"/>
+		<param name="Encoding" value="GB2312"/>
+		<param name="MaxFileSize" value="20MB"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ISO8601} %p [%c] - [%m]%n"/>
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="warn"/>
+			<param name="LevelMax" value="warn"/>
+			<param name="acceptOnMatch" value="true"/>
+		</filter>
+	</appender>
+	<appender name="error" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="./logs/tiaoin-crawl-server-error.log"/>
+		<param name="MaxBackupIndex" value="3"/>
+		<param name="Encoding" value="GB2312"/>
+		<param name="MaxFileSize" value="20MB"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ISO8601} %p [%c] - [%m]%n"/>
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="error"/>
+			<param name="LevelMax" value="error"/>
+			<param name="acceptOnMatch" value="true"/>
+		</filter>		
+	</appender>
+	<appender name="loginterceptor" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="./logs/tiaoin-crawl-server-operator.log"/>
+		<param name="Encoding" value="GB2312"/>
+		<param name="MaxBackupIndex" value="300"/>
+		<param name="MaxFileSize" value="20MB"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ISO8601} %p [%c] - [%m]%n"/>
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="info"/>
+			<param name="LevelMax" value="info"/>
+			<param name="acceptOnMatch" value="true"/>
+		</filter>
+	</appender>
+	
+	<appender name="IBatis" class="org.apache.log4j.ConsoleAppender">  
+        <layout class="org.apache.log4j.PatternLayout">  
+            <param name="ConversionPattern"  
+                value="%-4r [%t] %-5p %c %x - %m%n" />  
+        </layout>  
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">  
+            <param name="LevelMin" value="DEBUG" />  
+            <param name="LevelMax" value="DEBUG" />  
+        </filter>  
+    </appender>  
+    
+	<!-- <logger name="com.tastysoft.house.common.log" additivity="false">
+		<level value="info"/>
+		<appender-ref ref="loginterceptor"/>
+	</logger> -->
+	
+	
+	<!-- <logger name="com.tastysoft.house.core" additivity="false">
+		<level value="info"/>
+		<appender-ref ref="loginterceptor"/>
+	</logger> -->
+	
+	<logger name="com.tiaoin.crawl" additivity="false">
+		<level value="debug"/>
+		<appender-ref ref="debug"/>
+		<appender-ref ref="info"/>
+		<appender-ref ref="warn"/>
+		<appender-ref ref="error"/>
+	</logger>
+	<logger name="com.tiaoin.crawl.dal" additivity="false">
+		<level value="error"/>
+		<appender-ref ref="ibatis"/>
+	</logger>
+	<logger name="java.sql" additivity="false">
+		<level value="error"/>
+		<appender-ref ref="ibatis"/>
+	</logger>
+	    <logger name="com.ibatis" additivity="true">  
+        <level value="DEBUG"/>  
+    </logger>  
+    <logger name="java.sql.Connection" additivity="true">  
+        <level value="DEBUG" />  
+    </logger>  
+    <logger name="java.sql.Statement" additivity="true">  
+        <level value="DEBUG" />  
+    </logger>  
+    <logger name="java.sql.PreparedStatement" additivity="true">  
+        <level value="DEBUG" />  
+        <appender-ref ref="IBatis" />  
+    </logger>  
+    <logger name="java.sql.ResultSet" additivity="true">  
+        <level value="DEBUG" />  
+        <appender-ref ref="IBatis" />  
+    </logger>
+	<root>
+		<level value="DEBUG"/>
+		<appender-ref ref="STDOUT"/>		
+	</root>
+</log4j:configuration>

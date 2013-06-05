@@ -10,15 +10,5 @@
 						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd"
 	default-autowire="byName">
 
-    
-    <bean id="valueIntegerceptor" class="com.tiaoin.crawl.common.interceptor.ValueInterceptor"/>
-	<bean id="valueIntegerceptorProxyCreator" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
-        <property name="beanNames">
-			<value>startup</value>
-		</property>
-		
-		<property name="interceptorNames">
-			<value>valueIntegerceptor</value>
-		</property>
-	</bean>
+    <bean name="websiteManage" class="com.tiaoin.crawl.server.action.WebsiteManageAction"/>
 </beans>

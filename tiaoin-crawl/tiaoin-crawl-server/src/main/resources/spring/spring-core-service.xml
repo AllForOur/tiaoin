@@ -11,15 +11,13 @@
 	default-autowire="byName">
 	
     <context:component-scan base-package="com.tiaoin.crawl" />
-    
-    <bean name="spiderman" class="com.tiaoin.crawl.core.spider.Spiderman"/>
     <bean name="spiderComponentCollectionService" class="com.tiaoin.crawl.core.component.collection.SpiderComponentCollectionServiceImpl"/>
     <bean name="pluginManager" class=" com.tiaoin.crawl.core.manager.PluginManager"/>
     <bean name="siteManager" class="com.tiaoin.crawl.core.manager.SiteManager"/>
     <bean name="extensionsPointsManager" class="com.tiaoin.crawl.core.manager.ExtentionsPointManager"/>
     <bean name="framework" class="com.tiaoin.crawl.runtime.framework.Framework"/>
     <bean name="defaultComponent" class="com.tiaoin.crawl.core.component.DefaultComponent"/>
-    <bean name="startup" class="com.tiaoin.crawl.core.startup.Startup"/>
+    <bean name="startupService" class="com.tiaoin.crawl.core.startup.Startup"></bean>
     <bean name="threadPoolManager" class="com.tiaoin.crawl.core.manager.ThreadPoolManager"/>
     <bean name="scheduler" class="com.tiaoin.crawl.core.schedule.Scheduler"/>
     <bean name="executor" class="com.tiaoin.crawl.core.executor.Executor"/>

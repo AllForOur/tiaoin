@@ -2,11 +2,8 @@ package com.tiaoin.crawl.core.task;
 
 import java.util.TimerTask;
 
-import javax.annotation.Resource;
 
 import com.tiaoin.crawl.core.schedule.Scheduler;
-import com.tiaoin.crawl.core.spider.Spiderman;
-import com.tiaoin.crawl.core.xml.Site;
 
 public class SpiderTimerTask extends TimerTask {
     private Scheduler scheduler;

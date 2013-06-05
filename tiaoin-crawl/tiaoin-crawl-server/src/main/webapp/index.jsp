@@ -38,7 +38,7 @@
 		<h3>爬取网站管理</h3>
 		<div>
 			<ul style="padding-left:0px;display:inline;">
-				<li><a name="websiteManageList" href="#">网站配置列表</a></li>
+				<li><a name="websiteManageList" href="websitelist.action">网站配置列表</a></li>
 				<li><a href="#">网站配置管理</a></li>
 			</ul>
 		</div>

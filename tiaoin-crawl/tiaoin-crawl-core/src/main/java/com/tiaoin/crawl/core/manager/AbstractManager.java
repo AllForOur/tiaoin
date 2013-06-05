@@ -3,7 +3,6 @@ package com.tiaoin.crawl.core.manager;
 import java.util.List;
 
 import com.tiaoin.crawl.core.component.loader.ComponentLoader;
-import com.tiaoin.crawl.core.spider.Spiderman;
 import com.tiaoin.crawl.core.xml.Site;
 
 

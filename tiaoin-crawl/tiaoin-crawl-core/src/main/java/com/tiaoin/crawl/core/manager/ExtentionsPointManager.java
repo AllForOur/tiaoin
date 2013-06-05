@@ -1,9 +1,7 @@
 package com.tiaoin.crawl.core.manager;
 
 import java.util.Collection;
-import java.util.List;
 
-import com.tiaoin.crawl.core.listener.SpiderListener;
 import com.tiaoin.crawl.core.plugin.BeginPoint;
 import com.tiaoin.crawl.core.plugin.DigPoint;
 import com.tiaoin.crawl.core.plugin.DupRemovalPoint;
@@ -18,7 +16,6 @@ import com.tiaoin.crawl.core.plugin.TargetPoint;
 import com.tiaoin.crawl.core.plugin.TaskPollPoint;
 import com.tiaoin.crawl.core.plugin.TaskPushPoint;
 import com.tiaoin.crawl.core.plugin.TaskSortPoint;
-import com.tiaoin.crawl.core.spider.Spiderman;
 import com.tiaoin.crawl.core.xml.Site;
 
 public class ExtentionsPointManager extends AbstractManager {

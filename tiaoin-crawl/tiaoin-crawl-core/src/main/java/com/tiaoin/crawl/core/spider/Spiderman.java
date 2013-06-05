@@ -1,4 +1,4 @@
-package com.tiaoin.crawl.core.spider;
+/*package com.tiaoin.crawl.core.spider;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,19 +73,19 @@ public class Spiderman {
         return spiderListener;
     }
 
-    /**
+    *//**
      * @date 2013-1-17 下午01:43:52
      * @param listener
      * @return
-     */
+     *//*
     public void init(SpiderListener listener) {
         this.spiderListener = listener;
         init();
     }
 
-    /**
+    *//**
      * 爬虫初始化,加载组件
-     */
+     *//*
     public void init() {
         if (this.spiderListener == null)
             this.spiderListener = new DefaultSpiderListerner();
@@ -147,11 +147,11 @@ public class Spiderman {
         }
     }
 
-    /**
+    *//**
      * 判断是否超过调度次数
      * 
      * @return
-     */
+     *//*
     public boolean outOfSchedule() {
         if (maxScheduleTimes > 0 && scheduleTimes >= maxScheduleTimes) {
             return true;
@@ -159,9 +159,9 @@ public class Spiderman {
         return false;
     }
 
-    /**
+    *//**
      * 调用后开始
-     */
+     *//*
     public void startSchedule() {
         // 阻塞，判断之前所有的网站是否都已经停止完全
         // 加个超时
@@ -228,11 +228,11 @@ public class Spiderman {
             this.maxScheduleTimes = maxTimes;
     }
 
-    /**
+    *//**
      * 取消调度
      * 
      * @return
-     */
+     *//*
     public void cancel() {
         timer.cancel();
         timer = new Timer();
@@ -280,7 +280,7 @@ public class Spiderman {
         isShutdownNow = true;
     }
 
-    /*private void loadPlugins() throws Exception {
+    private void loadPlugins() throws Exception {
         File siteFolder = new File(Settings.getSiteXmlFolder());
         if (!siteFolder.exists())
             throw new Exception("can not found WebSites folder -> " + siteFolder.getAbsolutePath());
@@ -318,9 +318,9 @@ public class Spiderman {
                 sites.add(site);
             }
         }
-    }*/
+    }
 
-    /*private void initSites() throws Exception {
+    private void initSites() throws Exception {
         for (Site site : sites) {
             if (site.getName() == null || site.getName().trim().length() == 0)
                 throw new Exception("site name required");
@@ -438,13 +438,13 @@ public class Spiderman {
             site.counter = new Counter();
         }
     }
-*/
-   /* private void firstInitPoint(Collection<? extends Point> points, Site site,
+
+    private void firstInitPoint(Collection<? extends Point> points, Site site,
                                 SpiderListener listener) {
         for (Point point : points) {
             point.init(site, listener);
         }
-    }*/
+    }
 
     private void destroyPoint(Collection<? extends Point> points) {
         if (points == null)
@@ -601,3 +601,4 @@ public class Spiderman {
     }
 
 }
+*/

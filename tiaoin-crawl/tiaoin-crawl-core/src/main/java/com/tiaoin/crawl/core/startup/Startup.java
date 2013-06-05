@@ -13,6 +13,7 @@ import com.tiaoin.crawl.core.manager.PluginManager;
 import com.tiaoin.crawl.core.manager.SiteManager;
 import com.tiaoin.crawl.core.manager.ThreadPoolManager;
 import com.tiaoin.crawl.core.schedule.Scheduler;
+import com.tiaoin.crawl.core.service.StartupService;
 import com.tiaoin.crawl.core.xml.Site;
 
 /**
@@ -26,7 +27,7 @@ import com.tiaoin.crawl.core.xml.Site;
  * @version $Id: Startup.java, v 1.0 2013-5-31 下午10:40:19 sky.yang Exp $
  */
 @ValueAnnotation(type = ValueType.TYPE_INT, propertyName = "level", value = "1")
-public class Startup extends AbstractComponent {
+public class Startup extends AbstractComponent implements StartupService {
 
     @Resource
     private SpiderComponentCollectionServiceImpl spiderComponentCollectionService;

@@ -33,7 +33,13 @@
  		</global-results>
 	
 -->
+		<action name="websitelist" class="websiteManage" method="websiteManageListPage">
+			<result name="success">/pages/websitemanage/websiteManageList.jsp</result>
+		</action>
 		
+		<action name="startup" class="websiteManage" method="startup">
+			<result name="success" type="redirect">websitelist.action</result>
+		</action>
 	</package>
     
 </struts>

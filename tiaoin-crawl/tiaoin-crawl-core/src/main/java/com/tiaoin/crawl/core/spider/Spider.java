@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.tiaoin.crawl.core.fetcher.FetchResult;
 import com.tiaoin.crawl.core.fetcher.Page;
+import com.tiaoin.crawl.core.listener.DefaultSpiderListerner;
 import com.tiaoin.crawl.core.listener.SpiderListener;
 import com.tiaoin.crawl.core.plugin.BeginPoint;
 import com.tiaoin.crawl.core.plugin.DigPoint;
@@ -35,6 +36,7 @@ public class Spider implements Runnable {
     public void init(Task task) {
         this.task = task;
         //this.listener = listener;
+        listener = new DefaultSpiderListerner();
     }
 
     public void run() {

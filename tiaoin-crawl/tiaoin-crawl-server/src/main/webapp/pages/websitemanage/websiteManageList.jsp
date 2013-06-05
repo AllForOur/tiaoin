@@ -73,4 +73,7 @@
 			</fieldset>
 		</div>
 	</div>
+	<form action="startup.action">
+		<input name="startup" value="启动" type="submit"/>
+	</form>
 </html>

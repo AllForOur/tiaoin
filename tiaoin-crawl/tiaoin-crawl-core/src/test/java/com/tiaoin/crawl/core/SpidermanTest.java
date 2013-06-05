@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.tiaoin.crawl.common.utils.FileUtil;
 import com.tiaoin.crawl.core.listener.SpiderListener;
 import com.tiaoin.crawl.core.listener.SpiderListenerAdaptor;
-import com.tiaoin.crawl.core.spider.Spiderman;
+//import com.tiaoin.crawl.core.spider.Spiderman;
 import com.tiaoin.crawl.core.task.Task;
 
 //@RunWith(SpringJUnit4ClassRunner.class)

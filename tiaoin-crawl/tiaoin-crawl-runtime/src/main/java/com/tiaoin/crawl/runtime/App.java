@@ -10,7 +10,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import com.tiaoin.crawl.common.utils.FileUtil;
 import com.tiaoin.crawl.core.listener.SpiderListener;
 import com.tiaoin.crawl.core.listener.SpiderListenerAdaptor;
-import com.tiaoin.crawl.core.spider.Spiderman;
+//import com.tiaoin.crawl.core.spider.Spiderman;
 import com.tiaoin.crawl.core.task.Task;
 
 /**
@@ -56,9 +56,9 @@ public class App {
             }
         };
         
-        Spiderman spiderman = (Spiderman)ctx.getBean("spiderman");
-        spiderman.init(listener);
-        spiderman.startup();
+//        Spiderman spiderman = (Spiderman)ctx.getBean("spiderman");
+//        spiderman.init(listener);
+//        spiderman.startup();
 //        Spiderman.me()
 //        .init(listener)//初始化
 //        .startup()// 启动
